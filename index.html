@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Happy Birthday My Princess ✨</title>
+    <link rel="stylesheet" href="style.css?v=4.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+</head>
+<body class="mood-pink"> <!-- Default Mood: Baby Pink -->
+
+    <!-- Ambient floating orb background (pure CSS, GPU-cheap) -->
+    <div class="orb-field"></div>
+
+    <!-- Interactive Layer Canvases -->
+    <canvas id="glitterCanvas"></canvas>
+    <canvas id="cursorHeartsCanvas"></canvas>
+    <div id="infinityLoveOverlay" class="hidden"></div>
+
+   <!-- Persistent Music Controller -->
+<div class="audio-controller">
+    <button id="musicBtn" onclick="toggleMusic()"><i class="fas fa-play"></i> 🎵</button>
+    <audio id="bgMusic" loop src="audio/background.mp3"></audio>
+</div>
+
+    <!-- iPhone Top Sticky Controls (Dynamic Island Safe) -->
+    <div class="top-controls">
+        <div class="mood-selector-pill">
+            <button onclick="changeMood('pink')" title="Baby Pink" class="mood-dot pink-dot"></button>
+            <button onclick="changeMood('dark')" title="Dark Night" class="mood-dot dark-dot"></button>
+            <button onclick="changeMood('white')" title="Snow White" class="mood-dot white-dot"></button>
+            <button onclick="changeMood('green')" title="Mint Green" class="mood-dot green-dot"></button>
+        </div>
+        <div class="secret-hint" onclick="hitSecret()">❤️ <span id="secretClickCount">0</span>/10</div>
+    </div>
+
+    <!-- FLOW MANAGER ENGINE -->
+    <main class="app-container">
+
+        <!-- FLOW 1: WELCOME HUB -->
+        <section id="flow-welcome" class="flow-section active">
+            <div class="glass-card text-center">
+                <h1 class="flow-title highlight-accent">💖 Hello My Princess 💖</h1>
+                <div class="romantic-intro">
+                    <p>Today is not just another day...</p>
+                    <p>Today is the day when the most beautiful girl in my life was born.</p>
+                </div>
+                <h2 class="happy-bday-text">Happy Birthday ❤️</h2>
+                <button class="btn btn-primary" onclick="navigateTo('flow-password')">Start Our Journey →</button>
+            </div>
+        </section>
+
+        <!-- FLOW 2: PASSWORD LOCK -->
+        <section id="flow-password" class="flow-section">
+            <div class="glass-card text-center">
+                <h2><i class="fas fa-lock-open"></i> Enter Our Secret Password</h2>
+                <div class="password-box">
+                    <input type="password" id="secretPass" placeholder="Enter password..." pattern="\d*">
+                    <button class="btn btn-primary btn-small" onclick="verifyPassword()">Unlock 🔐</button>
+                </div>
+                <div class="hint-container">
+                    <p class="hint-title">💡 Hint:</p>
+                    <p class="hint-text">The day we first met ❤️</p>
+                </div>
+                <p id="passwordFeedback" class="feedback-msg"></p>
+            </div>
+        </section>
+
+        <!-- FLOW 3: MAIN WISH & COUNTDOWN DOCK -->
+        <section id="flow-wish" class="flow-section">
+            <div class="glass-card text-center">
+                <div class="cake-container" onclick="blowCandle()">
+                    <div class="candle" id="birthdayCandle"><div class="flame" id="candleFlame"></div></div>
+                    <div class="cake-body"></div>
+                </div>
+                
+                <div class="wish-typing-box">
+                    <h2 class="highlight-accent">Happy Birthday My Love ❤️</h2>
+                    <p>I wish every dream of yours comes true. May your smile never fade.</p>
+                </div>
+
+                <div class="love-counter-widget">
+                    <h3>Together Since ❤️</h3>
+                    <div class="counter-grid">
+                        <div><span id="count-years">0</span><br><small>Years</small></div>
+                        <div><span id="count-months">0</span><br><small>Months</small></div>
+                        <div><span id="count-days">0</span><br><small>Days</small></div>
+                    </div>
+                </div>
+
+                <div class="love-counter-widget secondary-countdown">
+                    <h3>Next Birthday Countdown ⏳</h3>
+                    <div class="counter-grid">
+                        <div><span id="cd-days">0</span><br><small>Days</small></div>
+                        <div><span id="cd-hours">0</span><br><small>Hours</small></div>
+                        <div><span id="cd-mins">0</span><br><small>Mins</small></div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="navigateTo('flow-interactive-playground')">Enter Playground 🎮</button>
+            </div>
+        </section>
+
+        <!-- FLOW 4: INTERACTIVE PLAYGROUND HUBS -->
+        <section id="flow-interactive-playground" class="flow-section">
+            <h2 class="section-heading text-center">The Romantic Playground 🌸</h2>
+            
+            <!-- Catch Heart Dodge Button -->
+            <div class="glass-card text-center margin-bottom">
+                <h3>Catch My Heart Clicker 🥹</h3>
+                <div class="dodge-container">
+                    <button id="dodgeBtn" class="btn btn-primary" onmouseover="dodgeButtonAction()" onclick="catchTheDodgeHeart()">Click Me ❤️</button>
+                </div>
+                <p id="dodgeResponse" class="highlight-accent bold margin-top hidden"></p>
+            </div>
+
+            <!-- Love Repeater -->
+            <div class="glass-card text-center margin-bottom">
+                <h3>Love Repeater Generator ♾️</h3>
+                <p class="sub-instructions">How many times do you want me to say "I Love You"?</p>
+                <div class="repeater-input-row">
+                    <input type="number" id="loveCountInput" value="10" min="1" inputmode="numeric">
+                    <button class="btn btn-primary btn-small" onclick="triggerLoveRepeater()">Generate Love ❤️</button>
+                </div>
+                <div id="loveRepeaterOutput" class="repeater-output-box hidden"></div>
+            </div>
+
+            <!-- Heart Arcade Game -->
+            <div class="glass-card text-center margin-bottom">
+                <h3>Heart Collection Arcade & Memory Lock 🔒</h3>
+                <div id="gameArena" class="game-viewport" onclick="processHeartGameCatch(event)">
+                    <span class="game-score-dock">Collected: <span id="gameScoreVal">0</span> Hearts</span>
+                    <div id="gameTargetHeart" class="arcade-target-heart">❤️</div>
+                </div>
+                <p id="gameFeedbackText" class="sub-instructions margin-top">Collect 5 hearts to unlock the secret validation layer.</p>
+                <div id="lockedMemoryState" class="lock-indicator-badge locked"><i class="fas fa-lock"></i> Locked</div>
+            </div>
+
+            <!-- Open When Envelopes -->
+            <div class="glass-card text-center margin-bottom">
+                <h3>Open When Pill Boxes 📦</h3>
+                <div class="open-when-grid">
+                    <button class="btn btn-small btn-glass" onclick="triggerOpenWhen('sad')">📦 When Sad</button>
+                    <button class="btn btn-small btn-glass" onclick="triggerOpenWhen('miss')">📦 When Miss Me</button>
+                    <button class="btn btn-small btn-glass" onclick="triggerOpenWhen('angry')">📦 When Angry</button>
+                    <button class="btn btn-small btn-glass" onclick="triggerOpenWhen('lonely')">📦 When Lonely</button>
+                    <button class="btn btn-small btn-glass" onclick="triggerOpenWhen('bday')">📦 On Birthday</button>
+                    <button class="btn btn-small btn-glass" onclick="triggerOpenWhen('sleep')">📦 Before Sleep</button>
+                </div>
+                <p id="openWhenOutput" class="open-when-response highlight-gold hidden"></p>
+            </div>
+<!-- Spin The Love Wheel -->
+<div class="glass-card text-center margin-bottom">
+    <h3>Spin The Love Wheel 🎡</h3>
+    <div class="wheel-outer-wrapper">
+        <div class="wheel-pointer">▼</div>
+        <div id="loveWheelNode" class="wheel-element">
+            <!-- 8 Distinct Visual Sectors -->
+            <div class="wheel-segment" style="--i:0; --clr:#ffccd5;"><span class="segment-content">Hug 🤗</span></div>
+            <div class="wheel-segment" style="--i:1; --clr:#ffb3c1;"><span class="segment-content">Kiss 💋</span></div>
+            <div class="wheel-segment" style="--i:2; --clr:#ff8fa3;"><span class="segment-content">Movie 🎬</span></div>
+            <div class="wheel-segment" style="--i:3; --clr:#ff758f;"><span class="segment-content">Ice Cream 🍦</span></div>
+            <div class="wheel-segment" style="--i:4; --clr:#c77dff;"><span class="segment-content">Gift 🎁</span></div>
+            <div class="wheel-segment" style="--i:5; --clr:#e0aaff;"><span class="segment-content">Drive 🚗</span></div>
+            <div class="wheel-segment" style="--i:6; --clr:#bde0fe;"><span class="segment-content">Cuddles ❤️</span></div>
+            <div class="wheel-segment" style="--i:7; --clr:#a2d2ff;"><span class="segment-content">Date 🌹</span></div>
+        </div>
+        <div class="wheel-center-cap">❤️</div>
+    </div>
+    <button class="btn btn-primary btn-small margin-top" onclick="spinLoveWheel()">Spin Wheel 🌀</button>
+    <p id="wheelResultText" class="highlight-accent bold margin-top"></p>
+</div>
+
+            <!-- Love Meter -->
+            <div class="glass-card text-center margin-bottom">
+                <h3>Love Meter Processor ⚡</h3>
+                <button class="btn btn-primary btn-small" onclick="runLoveMeter()">Measure My Love</button>
+                <div class="meter-bar-container margin-top"><div id="meterProgressFill" class="meter-fill"></div></div>
+                <h4 id="meterStatusOutput" class="margin-top bold">0%</h4>
+            </div>
+
+            <!-- Future Fortune Predictor -->
+            <div class="glass-card text-center margin-bottom">
+                <h3>Future Prediction System 🔮</h3>
+                <button class="btn btn-primary btn-small" onclick="generateFuturePrediction()">Generate Future</button>
+                <p id="predictionOutputBox" class="highlight-gold bold margin-top hidden"></p>
+            </div>
+
+            <!-- Mood Tracker Matrix -->
+            <div class="glass-card text-center margin-bottom">
+                <h3>Mood Detector Interface 🧠</h3>
+                <p class="sub-instructions">How are you feeling right now?</p>
+                <div class="mood-selector-row">
+                    <button class="btn btn-glass btn-small" onclick="detectMood('happy')">😊 Happy</button>
+                    <button class="btn btn-glass btn-small" onclick="detectMood('sad')">😔 Sad</button>
+                    <button class="btn btn-glass btn-small" onclick="detectMood('miss')">🥹 Missing Me</button>
+                    <button class="btn btn-glass btn-small" onclick="detectMood('angry')">😡 Angry</button>
+                </div>
+                <p id="moodResponseText" class="open-when-response highlight-accent hidden"></p>
+            </div>
+
+            <!-- Comfort Dock Hub -->
+            <div class="glass-card text-center margin-bottom">
+                <h3>Instant Virtual Comfort Dock 🛋️</h3>
+                <div class="flex-button-row">
+                    <button class="btn btn-primary btn-small" onclick="triggerVirtualHug()">Need a Hug? 🤗</button>
+                    <button class="btn btn-gold btn-small" onclick="triggerVirtualKiss(event)">Send Kiss 💋</button>
+                </div>
+                <p id="comfortFeedbackText" class="highlight-accent bold margin-top"></p>
+            </div>
+
+            <!-- Voice Message Section -->
+<div class="glass-card text-center margin-bottom">
+    <h3>A Special Voice Note For You 🎧</h3>
+    <p class="margin-bottom" style="font-size: 0.9rem; opacity: 0.8;">Click below to listen to my voice</p>
+    
+    <!-- Hidden Audio Element -->
+<audio id="loveAudio">
+    <source src="audio/my-voice.opus" type="audio/ogg">
+    Your browser does not support the audio element.
+</audio>
+    <!-- Premium Play/Pause Button -->
+    <button id="voiceBtn" class="btn btn-primary btn-small" onclick="toggleVoiceMessage()">
+        Play Voice Message 🎵
+    </button>
+</div>
+            <!-- Tactical Scratch Surprise Card -->
+            <div class="glass-card text-center margin-bottom">
+                <h3>Scratch Card Surprise 🎫</h3>
+                <p class="sub-instructions">Scratch across the card surface below!</p>
+                <div class="scratch-card-relative-wrapper">
+                    <div class="scratch-underlying-text">I LOVE YOU ❤️</div>
+                    <canvas id="scratchCanvasSurface" width="260" height="120"></canvas>
+                </div>
+            </div>
+
+            <!-- Fortune Cookie Break -->
+            <div class="glass-card text-center margin-bottom">
+                <h3>Fortune Cookie Crack 🥠</h3>
+                <button class="btn btn-gold btn-small" onclick="crackFortuneCookie()">Crack Cookie</button>
+                <p id="fortuneCookieOutputText" class="open-when-response highlight-accent hidden"></p>
+            </div>
+
+            <!-- Sweet Compliment Injector -->
+            <div class="glass-card text-center margin-bottom">
+                <h3>Compliment Generator Machine 🧠</h3>
+                <button class="btn btn-primary btn-small" onclick="triggerRandomCompliment()">Tell Me Something Sweet ❤️</button>
+                <p id="complimentMachineOutput" class="open-when-response highlight-gold hidden"></p>
+            </div>
+
+            <!-- Premium Love Bank Reserve Component -->
+            <div class="glass-card text-center margin-bottom love-bank-card">
+                <h3 class="highlight-gold"><i class="fas fa-university"></i> The Love Bank Counter</h3>
+                <div class="love-balance-box">
+                    <small>Available Love Balance:</small>
+                    <div class="balance-infinity">∞</div>
+                </div>
+                <p class="sub-instructions">How much love do you want today?</p>
+                <div class="bank-input-row">
+                    <input type="number" id="loveBankWithdrawAmount" value="100" inputmode="numeric">
+                    <button class="btn btn-gold btn-small" onclick="processLoveBankWithdrawal()">Withdraw ❤️</button>
+                </div>
+                <div id="loveBankReceiptDock" class="bank-receipt hidden"></div>
+            </div>
+
+            <div class="text-center margin-top-btn">
+                <button class="btn btn-primary" onclick="navigateTo('flow-timeline')">See Our Story 📖</button>
+            </div>
+        </section>
+
+        <!-- FLOW 5: LIFETIME COUNTDOWN + MINI GAME HUB -->
+        <section id="flow-timeline" class="flow-section">
+            <h2 class="section-heading text-center">A Little Something For You 🌷</h2>
+
+            <!-- Lifetime Recurring Birthday Countdown -->
+            <div class="glass-card text-center margin-bottom lifetime-countdown-card">
+                <h3>⏳ Countdown To Your Birthday</h3>
+                <p id="lifetimeCountdownLabel" class="sub-instructions">Counting down to Nadia's next birthday</p>
+                <div class="lifetime-countdown-grid">
+                    <div><span id="life-years">0</span><small>Years</small></div>
+                    <div><span id="life-months">0</span><small>Months</small></div>
+                    <div><span id="life-weeks">0</span><small>Weeks</small></div>
+                    <div><span id="life-days">0</span><small>Days</small></div>
+                    <div><span id="life-hours">0</span><small>Hours</small></div>
+                    <div><span id="life-mins">0</span><small>Mins</small></div>
+                    <div><span id="life-secs">0</span><small>Secs</small></div>
+                </div>
+                <p class="sub-instructions margin-top">The moment one birthday arrives, this quietly starts counting to the next one. It never really ends. ❤️</p>
+            </div>
+
+            <!-- Match Our Hearts Mini Game -->
+            <div class="glass-card text-center margin-bottom">
+                <h3>Match Our Hearts 🧩</h3>
+                <p class="sub-instructions">Flip the cards and find every matching pair!</p>
+                <div class="memory-game-stats">
+                    <span>Moves: <strong id="memoryMoves">0</strong></span>
+                    <span>Matched: <strong id="memoryMatched">0</strong>/6</span>
+                </div>
+                <div id="memoryGameGrid" class="memory-game-grid"></div>
+                <p id="memoryWinText" class="highlight-accent bold margin-top hidden"></p>
+                <button class="btn btn-glass btn-small margin-top" onclick="restartMemoryGame()">🔄 Restart Game</button>
+            </div>
+
+            <div class="text-center margin-top-btn">
+                <button class="btn btn-primary" onclick="navigateTo('flow-gallery')">Open Memory Gallery 📷</button>
+            </div>
+        </section>
+
+        <!-- FLOW 6: MEMORY GALLERY -->
+<section id="flow-gallery" class="flow-section">
+
+    <h2 class="section-heading text-center">📷 Our Memory Gallery</h2>
+
+    <p class="gallery-subtitle text-center">
+        Every picture holds a beautiful memory with you ❤️
+    </p>
+
+    <div class="swiper memory-swiper">
+
+        <!-- Images will be added automatically from script.js -->
+        <div class="swiper-wrapper" id="dynamic-gallery-wrapper"></div>
+
+        <!-- Navigation -->
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+
+        <!-- Pagination -->
+        <div class="swiper-pagination"></div>
+
+    </div>
+
+    <!-- Lightbox -->
+    <div id="galleryLightbox" class="lightbox" onclick="closeLightbox()">
+
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+
+            <img id="lightboxImg" src="" alt="Memory">
+
+            <div id="lightboxCaption"></div>
+
+            <button class="close-lightbox-btn" onclick="closeLightbox()">
+                &times;
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="text-center margin-top-btn">
+        <button class="btn btn-primary"
+            onclick="navigateTo('flow-letter')">
+            Read My Letter 💌
+        </button>
+    </div>
+
+</section>
+
+        <!-- FLOW 7: ARTISANAL DEDICATED LETTER -->
+        <section id="flow-letter" class="flow-section">
+            <div class="paper-letter-container">
+                <div class="paper-sheet">
+                    <h2 class="letter-header">My Dearest... 💌</h2>
+                    <div class="letter-paragraphs">
+                        <p>From the moment you walked into my life, you changed my world completely. Your positive energy, kindness, and unwavering support are the pillars that keep me grounded and at peace.</p>
+                        <p>I feel exceptionally lucky to celebrate this beautiful day with you. You make even the simplest moments feel remarkably special, and I appreciate everything you do for us.</p>
+                        <p>On this birthday, I want to promise you that no matter where life takes us, I will always be standing right by your side, supporting your dreams just as you support mine.</p>
+                    </div>
+                    <div class="letter-footer">
+                        <p>Forever Yours,</p>
+                        <p class="signature-name">Farhan ❤️</p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center margin-top-btn">
+                <button class="btn btn-primary" onclick="navigateTo('flow-final')">The Final Surprise 🎁</button>
+            </div>
+        </section>
+
+        <!-- FLOW 8: FINAL ETERNAL MATRICES -->
+        <section id="flow-final" class="flow-section">
+            <div class="glass-card text-center">
+                <h2 class="flow-title highlight-gold">The Ultimate Surprise ✨</h2>
+                <div class="emotional-message">
+                    <p>No matter how many birthdays come, I only want one thing...</p>
+                    <p class="bold-highlight">To celebrate every single one with you.</p>
+                </div>
+                <h3 class="final-wish-heading">Happy Birthday My Love ❤️</h3>
+
+                <div class="final-promise-zone margin-top">
+                    <h4>Will You Stay With Me Forever?</h4>
+                    <div class="dodge-container dynamic-row-centered margin-top">
+                        <button id="promiseYesBtn" class="btn btn-primary" onclick="processFinalPromiseYes()">YES ❤️</button>
+                        <button id="promiseNoBtn" class="btn btn-glass" onmouseover="dodgePromiseNoButton()" onclick="dodgePromiseNoButton()">NO 😒</button>
+                    </div>
+                    <p id="promiseFinalOutput" class="open-when-response highlight-accent hidden"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECRETS LAYER NODE -->
+        <section id="flow-secret" class="flow-section">
+            <div class="glass-card text-center">
+                <h2 class="highlight-accent">🎉 You Found My Secret Page!</h2>
+                <p class="secret-text-reveal">"You clicked the heart indicator exactly 10 times! Here is a hidden note just for you: You are my absolute favorite person, my constant peace, and the best thing that ever happened to me. Thank you for being you!"</p>
+                <button class="btn btn-primary" onclick="navigateTo('flow-wish')">Go Back Home 🏠</button>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
